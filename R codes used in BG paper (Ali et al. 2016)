@@ -1,0 +1,61 @@
+# This code is writted by Arshad Ali (arshadforester@gmail.com) according to the vinettage and tutorials of packages
+# Feel free to copy, edit and use under informed. Discussion welcomed. 
+# 13 Sep 2016, 15:50. 
+
+#First download the data from the Dryad Digital Repository http://dx.doi.org/10.5061/dryad.8bp7m (Ali et al., 2016).
+Upload data in R, forexapmle with th name "Dataset"
+#rename the variable in Dataset and add with new name
+Dataset$AGC = ln(AGC)$Dataset
+Dataset$Hs = ln(species diversity)$Dataset	
+Dataset$Hh2 = ln(Height diversity, 2m)$Dataset	
+Dataset$Hh3 = ln(Height diversity, 3m)$Dataset	
+Dataset$Hh4 = ln(Height diversity, 4m)$Dataset	
+Dataset$Hh5 = ln(Height diversity, 5m)$Dataset	
+Dataset$Hd2 = ln(DBH diversity, 2cm)$Dataset	
+Dataset$Hd4 = ln(DBH diversity, 4cm)$Dataset	
+Dataset$Hd6 = ln(DBH diversity, 6cm)$Dataset
+Dataset$Hd8 = ln(DBH diversity, 8cm)$Dataset
+Dataset$Age = ln(Stand Age)$Dataset
+
+
+# The following R codes are based on Fig. 3a and Table 1 (model 3a) published in Ali et al.,2016. Stand structural diversity rather than species diversity enhances aboveground carbon storage in secondary subtropical forests in Eastern China. Biogeosciences 13, 4627–4635. http://dx.doi.org/10.5194/bg-13-4627-2016.
+library("lavaan")
+model <- '# latent variable
+SSD =~Hd8 + Hh2  #SSD is the new name for latent variable which incorporate Hd and Hh
+#regressions
+SSD~Age
+SSD~Age+Hs
+AGC~SSD+Hs+Age'
+fit <- sem(model,data=Dataset)
+summary(fit)
+parameterEstimates(fit, standardized=TRUE, rsq=TRUE)
+summary(fit, fit.measures=TRUE)
+
+# Direct, indirect and total standardized effects
+
+modela1 <- '# latent variable
+SSD =~Hd8 + Hh2
+# direct effect
+AGC ~ c*Age
+# mediator
+SSD ~ a*Age   # remember to recode to the direct effect of Age on SSD with "a", later one we will use to calcualte indirect effects
+AGC ~ b*SSD
+Hs ~ e*Age
+AGC ~ f*Hs
+SSD ~ g*Hs
+# indirect effect
+ab := a*b    #it means the indirect effect of Age on AGC via SSD
+ef := e*f    #it means the indirect effect of Age on AGC via Hs
+gb := g*b    #it means the indirect effect of Hs on AGC via SSD
+# total effect
+total := c + (a*b) + (e*f)  #total = direct + indirect via SSD + indirect via Hs
+total1 := f + (g*b)'
+fita1 <- sem(modela1, data = Dataset)
+summary(fita1)
+summary(fita1, standardized=TRUE, rsq=TRUE)
+parameterEstimates(fita1, standardized=TRUE, rsq=TRUE)
+
+### References used:
+# Rosseel, Y., 2012. Lavaan: an R package for structural equation modeling. J. Stat. Softw. 48, 1–36.
+# Grace et al., 2016. Integrative modelling reveals mechanisms linking productivity and plant species richness. Nature 529, 390–393. http://dx.doi.org/10.1038/nature16524.
+# Zhang, Y., Chen, H., 2015. Individual size inequality links forest diversity and above-ground biomass. J. Ecol. 103, 1245–1252. http://dx.doi.org/10.1111/1365-2745.12425.
