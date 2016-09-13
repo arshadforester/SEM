@@ -3,7 +3,7 @@
 # 13 Sep 2016, 15:50. 
 
 #First download the data from the Dryad Digital Repository http://dx.doi.org/10.5061/dryad.8bp7m (Ali et al., 2016).
-# Upload data in R, forexapmle with th name "Dataset"
+# Upload data in R, for exapmle with the name "Dataset"
 #rename the variable in Dataset and add with new name
 Dataset$AGC = ln(AGC)$Dataset
 Dataset$Hs = ln(species diversity)$Dataset	
@@ -38,7 +38,7 @@ SSD =~Hd8 + Hh2
 # direct effect
 AGC ~ c*Age
 # mediator
-SSD ~ a*Age   # remember to recode to the direct effect of Age on SSD with "a", later one we will use to calcualte indirect effects
+SSD ~ a*Age   # remember to recode the direct effect of Age on SSD with "a", later on we will use to calcualte indirect effects
 AGC ~ b*SSD
 Hs ~ e*Age
 AGC ~ f*Hs
